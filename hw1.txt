@@ -1,0 +1,40 @@
+> library(readxl)
+> estate<-read_xlsx("c:/統計學/data set/Data_Analytics_Files/Real_Estate.xlsx")
+> View(estate)
+> library(psych)
+> data<-estate[,9:10]
+> describe(data)
+         vars   n  mean    sd median trimmed  mad min max range  skew kurtosis   se
+Days        1 105 29.59 10.08     28   29.09 8.90   2  58    56  0.41     0.47 0.98
+Township    2 105  3.10  1.29      3    3.13 1.48   1   5     4 -0.17    -1.08 0.13
+> describe(data,quant=c(.25,.75),IQR = T)
+         vars   n  mean    sd median trimmed  mad min max range  skew kurtosis   se IQR Q0.25 Q0.75
+Days        1 105 29.59 10.08     28   29.09 8.90   2  58    56  0.41     0.47 0.98  12    23    35
+Township    2 105  3.10  1.29      3    3.13 1.48   1   5     4 -0.17    -1.08 0.13   2     2     4
+
+> #days(continuous) vs. price(continuous) vs. years vs. FICO
+> library(PerformanceAnalytics)
+> library(zoo)
+> data=data.frame(estate$Days, estate$Price, estate$Years, estate$FICO)
+> View(data)
+> chart.Correlation(data,histogram = T)
+
+> #days vs. agent
+> table(estate$Agent)
+
+  Carter   Isaacs    Marty Peterson     Rose 
+      22       22       20       21       20 
+> ggplot(estate,aes(x=Days,color=Agent))+
++ geom_density(position="identity")
+
+
+> default=estate$`Default (Yes is 1)`
+>data=data.frame(estate$Days, default)
+> ggplot(data,aes(x=estate.Days, group=default, color=default))+
++ geom_density(position = "identity")
+
+> library(ggridges)
+> ggplot(estate,aes(x=Days,y=Agent,fill=Agent))+
++ geom_boxplot(width=0.3, alpha=0.2)+
++ geom_density_ridges(scale=0.4)+
++ theme_light()
